@@ -2,11 +2,12 @@
 #include <vector>
 #include <iomanip>
 #include <random>
+#include <chrono>
 
 int random_num_generator(){
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<int> dis(0, 1000);
+    static std::uniform_int_distribution<int> dis(0, 1000);
     return dis(gen);
 }
 
@@ -29,21 +30,21 @@ struct Properties{
         spin.reserve(size);
     }   
     int average_positon(){
-        int avg_pos = 0;
+        volatile int avg_pos = 0;
         for(int i = 0;i < position.size();++i){
             avg_pos += position[i];
         }
         return avg_pos;
     }
     int average_momentum(){
-        int avg_mom = 0;
+        volatile int avg_mom = 0;
         for(int i = 0;i < momentum.size();++i){
             avg_mom += momentum[i];
         }
         return avg_mom;
     }
     int average_spin(){
-        int avg_spin = 0;
+        volatile int avg_spin = 0;
         for(int i = 0;i < spin.size();++i){
             avg_spin += spin[i];
         }
@@ -52,22 +53,25 @@ struct Properties{
 };
 
 int average_positon(const std::vector<Particle>& particles){
-    int avg_pos = 0;
+    volatile int avg_pos = 0;
     for(int i = 0;i < particles.size();++i){
         avg_pos += particles[i].position;
     }
+    return avg_pos;
 }
 int average_momentum(const std::vector<Particle>& particles){
-    int avg_pos = 0;
+    volatile int avg_mom = 0;
     for(int i = 0;i < particles.size();++i){
-        avg_pos += particles[i].momentum;
+        avg_mom += particles[i].momentum;
     }
+    return avg_mom;
 }
 int average_spin(const std::vector<Particle>& particles){
-    int avg_pos = 0;
+    volatile int avg_spin = 0;
     for(int i = 0;i < particles.size();++i){
-        avg_pos += particles[i].spin;
+        avg_spin += particles[i].spin;
     }
+    return avg_spin;
 }
 
 const int SIZE = 10000;
@@ -88,15 +92,19 @@ int main(){
         struct_of_arrays.spin.push_back(random_num_generator());
     }
 
-    for (int i = 0 ; i < ITEARTIONS;++i){
-        std::cout << "Iteration: " << i << std::endl;
-        std::cout << "Average position of array of structs: " << average_positon(array_of_structs) << std::endl;
-        std::cout << "Average momentum of array of structs: " << average_momentum(array_of_structs) << std::endl;
-        std::cout << "Average spin of array of structs: " << average_spin(array_of_structs) << std::endl;
-        std::cout << "Average position of struct of arrays: " << struct_of_arrays.average_positon() << std::endl;
-        std::cout << "Average momentum of struct of arrays: " << struct_of_arrays.average_momentum() << std::endl;
-        std::cout << "Average spin of struct of arrays: " << struct_of_arrays.average_spin() << std::endl;
-    }
+    auto start = std::chrono::high_resolution_clock::now();
+    average_positon(array_of_structs);
+    average_momentum(array_of_structs);
+    average_spin(array_of_structs);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Elapsed time for array of structs: " << std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() << "ms\n";
+
+    start = std::chrono::high_resolution_clock::now();
+    struct_of_arrays.average_positon();
+    struct_of_arrays.average_momentum();
+    struct_of_arrays.average_spin();
+    end = std::chrono::high_resolution_clock::now();
+    std::cout << "Elapsed time for struct of arrays: " << std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() << "ms\n";
 
     return 0;
 }
