@@ -7,7 +7,7 @@
 int random_num_generator() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<int> dis(0, 1000);
+    static std::uniform_int_distribution<int> dis(0, 1000000);
     return dis(gen);
 }
 
