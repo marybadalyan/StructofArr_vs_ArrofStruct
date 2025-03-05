@@ -20,7 +20,7 @@ Uses argument parsing via "kaizen.h" for flexible configuration.
 ```main```: Initializes particles, runs timing loops, and prints the table.
 ### Dependencies
 C++11 or later (for std::chrono, range-based loops, etc.).
-Standard libraries: <iostream>, <vector>, <iomanip>, <random>, <chrono>.
+Standard libraries: ```iostream>```, ```<vector>```, ```<iomanip>```,```<random>```, ```<chrono>```.
 Using [kaizen.h](https://github.com/heinsaar/kaizen) for command line argument parsing
 
 ## Build and Run 
