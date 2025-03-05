@@ -4,50 +4,50 @@
 #include <random>
 #include <chrono>
 #include "kaizen.h"
-int random_num_generator() {
+long long random_num_generator() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<int> dis(0, 1000000);
+    static std::uniform_int_distribution<long long> dis(0, 1000000);
     return dis(gen);
 }
 
 struct Particle {
-    int position;
-    int momentum;
-    int spin;
+    long long position;
+    long long momentum;
+    long long spin;
 
-    Particle(int pos, int mom, int spn) : position(pos), momentum(mom), spin(spn) {}
+    Particle(long long pos, long long mom, long long spn) : position(pos), momentum(mom), spin(spn) {}
 };
 
 
 struct ArrayOfParticles { // AoS
     std::vector<Particle> particles;
 
-    ArrayOfParticles(int size) {
+    ArrayOfParticles(long long size) {
         particles.reserve(size);
         for (int i = 0; i < size; ++i) {
             particles.emplace_back(random_num_generator(), random_num_generator(), random_num_generator());
         }
     }
 
-    int average_position(int size) {
-        volatile int avg_pos = 0;
+    long long average_position(int size) {
+        volatile long long avg_pos = 0;
         for (const auto& particle : particles) {
             avg_pos += particle.position;
         }
         return avg_pos / size;
     }
 
-    int average_momentum(int size) {
-        volatile int avg_mom = 0;
+    long long average_momentum(int size) {
+        volatile long long avg_mom = 0;
         for (const auto& particle : particles) {
             avg_mom += particle.momentum;
         }
         return avg_mom / size;
     }
 
-    int average_spin(int size) {
-        volatile int avg_spin = 0;
+    long long average_spin(int size) {
+        volatile long long  avg_spin = 0;
         for (const auto& particle : particles) {
             avg_spin += particle.spin;
         }
@@ -56,9 +56,9 @@ struct ArrayOfParticles { // AoS
 };
 
 struct ArrayOfProperties { // SoA
-    std::vector<int> position;
-    std::vector<int> momentum;
-    std::vector<int> spin;
+    std::vector<long long> position;
+    std::vector<long long> momentum;
+    std::vector<long long> spin;
 
     ArrayOfProperties(int size) {
         position.reserve(size);
@@ -71,25 +71,25 @@ struct ArrayOfProperties { // SoA
         }
     }
 
-    int average_position(int size) {
-        volatile int avg_pos = 0;
-        for (int pos : position) {
+    long long average_position(int size) {
+        volatile long long avg_pos = 0;
+        for (long long pos : position) {
             avg_pos += pos;
         }
         return avg_pos / size;
     }
 
-    int average_momentum(int size) {
-        volatile int avg_mom = 0;
-        for (int mom : momentum) {
+    long long average_momentum(int size) {
+        volatile long long avg_mom = 0;
+        for (long long mom : momentum) {
             avg_mom += mom;
         }
         return avg_mom / size;
     }
 
-    int average_spin(int size) {
-        volatile int avg_spin = 0;
-        for (int spn : spin) {
+    long long average_spin(int size) {
+        volatile long long avg_spin = 0;
+        for (long long spn : spin) {
             avg_spin += spn;
         }
         return avg_spin / size;
@@ -122,33 +122,33 @@ int main(int argc, char* argv[]) {
 
     // AoS timing per property
     auto start = std::chrono::high_resolution_clock::now();
-    int aos_pos = 0;
+    long long aos_pos = 0;
     for (size_t i = 0; i < iterations; ++i) aos_pos = array_of_structs.average_position(size);
     auto aos_time_pos = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     start = std::chrono::high_resolution_clock::now();
-    int aos_mom = 0;
+    long long aos_mom = 0;
     for (size_t i = 0; i < iterations; ++i) aos_mom = array_of_structs.average_momentum(size);
     auto aos_time_mom = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     start = std::chrono::high_resolution_clock::now();
-    int aos_spn = 0;
+    long long aos_spn = 0;
     for (size_t i = 0; i < iterations; ++i) aos_spn = array_of_structs.average_spin(size);
     auto aos_time_spn = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     // SoA timing per property
     start = std::chrono::high_resolution_clock::now();
-    int soa_pos = 0;
+    long long soa_pos = 0;
     for (size_t i = 0; i < iterations; ++i) soa_pos = struct_of_arrays.average_position(size);
     auto soa_time_pos = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     start = std::chrono::high_resolution_clock::now();
-    int soa_mom = 0;
+    long long soa_mom = 0;
     for (size_t i = 0; i < iterations; ++i) soa_mom = struct_of_arrays.average_momentum(size);
     auto soa_time_mom = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     start = std::chrono::high_resolution_clock::now();
-    int soa_spn = 0;
+    long long soa_spn = 0;
     for (size_t i = 0; i < iterations; ++i) soa_spn = struct_of_arrays.average_spin(size);
     auto soa_time_spn = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
