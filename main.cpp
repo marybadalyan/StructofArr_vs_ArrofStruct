@@ -167,28 +167,28 @@ int main(int argc, char* argv[]) {
               << "|" << std::setw(w2) << "Momentum" 
               << "|" << std::setw(w2) << "Spin" << "|\n";
     std::cout << sep;
-    std::cout << "|" << std::left << std::setw(w1) << "AoS Avg (int)" 
+    std::cout << "|" << std::left << std::setw(w1) << "AoS Avg " 
               << "|" << std::right << std::setw(w2) << aos_pos 
               << "|" << std::setw(w2) << aos_mom 
               << "|" << std::setw(w2) << aos_spn << "|\n";
     std::cout << sep;
-    std::cout << "|" << std::left << std::setw(w1) << "SoA Avg (int)" 
+    std::cout << "|" << std::left << std::setw(w1) << "SoA Avg " 
               << "|" << std::right << std::setw(w2) << soa_pos 
               << "|" << std::setw(w2) << soa_mom 
               << "|" << std::setw(w2) << soa_spn << "|\n";
     std::cout << sep;
-    std::cout << "|" << std::left << std::setw(w1) << "AoS Time (ns/it)" 
+    std::cout << "|" << std::left << std::setw(w1) << "AoS Time (ns)" 
               << "|" << std::right << std::setw(w2) << aos_time_pos 
               << "|" << std::setw(w2) << aos_time_mom 
               << "|" << std::setw(w2) << aos_time_spn << "|\n";
     std::cout << sep;
-    std::cout << "|" << std::left << std::setw(w1) << "SoA Time (ns/it)" 
+    std::cout << "|" << std::left << std::setw(w1) << "SoA Time (ns)" 
               << "|" << std::right << std::setw(w2) << soa_time_pos 
               << "|" << std::setw(w2) << soa_time_mom 
               << "|" << std::setw(w2) << soa_time_spn << "|\n";
     std::cout << sep;
-    std::cout << "|" << std::left << std::setw(w1) << "Total Time Difference for " <<  iterations <<  "\n|" << "iterations and " << size << " elements"  
-              << std::right << std::setw(w2 * 2 + 1) << avg_time_dif << std::setw(0) << "|\n"; // Span 3 columns
+    std::cout << "|" << std::left << std::setw(w1) << "Total Time Difference for " << std::setw(w1 + w2 - 3) <<  iterations  <<"|\n|" << "iterations and " << size << " elements (ns)"  
+              << std::right << std::setw(w1 - 2) << avg_time_dif << std::setw(0) << "|\n"; // Span 3 columns
     std::cout << sep;
 
     return 0;
