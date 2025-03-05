@@ -187,8 +187,8 @@ int main(int argc, char* argv[]) {
               << "|" << std::setw(w2) << soa_time_mom 
               << "|" << std::setw(w2) << soa_time_spn << "|\n";
     std::cout << sep;
-    std::cout << "|" << std::left << std::setw(w1) << "Total Time Diff" 
-              << "|" << std::right << std::setw(w2 * 3 + 2) << avg_time_dif << std::setw(0) << "|\n"; // Span 3 columns
+    std::cout << "|" << std::left << std::setw(w1) << "Total Time Difference for " <<  iterations <<  "\n|" << "iterations and " << size << " elements"  
+              << std::right << std::setw(w2 * 2 + 1) << avg_time_dif << std::setw(0) << "|\n"; // Span 3 columns
     std::cout << sep;
 
     return 0;
