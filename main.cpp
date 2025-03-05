@@ -7,7 +7,7 @@
 int random_num_generator() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<int> dis(0, 1000);
+    static std::uniform_int_distribution<int> dis(0, 1000000);
     return dis(gen);
 }
 
@@ -103,8 +103,8 @@ std::pair<int,int> process_args(int argc, char* argv[]) {
     auto iter_options = args.get_options("-iterations");
 
     if(size_options.empty() || iter_options.empty()) {
-        zen::log("Error: --size and --iterations arguments are absent using default iterations:1000 size:10000!");
-        return {10000, 1000};
+        zen::log("Error: --size and --iterations arguments are absent using default iterations:1000 size:100000!");
+        return {100000, 1000};
     }
 
     return {static_cast<int>(std::atoi(size_options[0].c_str())), static_cast<int>(std::atoi(iter_options[0].c_str()))};
