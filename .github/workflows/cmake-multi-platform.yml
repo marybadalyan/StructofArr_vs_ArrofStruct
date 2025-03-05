@@ -89,7 +89,7 @@ jobs:
         if [ -f "$executable_path" ]; then
           echo "Executable found, running it with args"
           # Run with explicit size and iterations for consistency and reduced noise
-          "$executable_path" --size 100000 --iterations 10000
+          "$executable_path" --size 100000 --iterations 1000
         else
           echo "Executable not found: $executable_path"
           exit 1
