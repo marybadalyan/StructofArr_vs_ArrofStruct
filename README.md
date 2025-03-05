@@ -73,6 +73,7 @@ Performance: SoA typically outperforms AoS due to contiguous memory access, impr
 Total Time Diff: A positive value (e.g., 1500 ns) means AoS takes longer overall. Here, 1500 ns = (4100 + 4150 + 4120) - (3600 + 3650 + 3620).
 Customization
 Command-Line Args: Use -size and -iterations to adjust the simulation scale.
-
+```
 ### Conclusion
-SoA’s sequential access ensures that nearly all fetched data is used, minimizing wasted bandwidth. AoS’s strided access fetches unused data (momentum and spin), slowing it down, especially for large size values where cache effects dominate.
+SoA’s sequential access ensures that nearly all fetched data is utilized, leveraging the contiguity of memory to minimize wasted bandwidth and maximize cache efficiency. In contrast, AoS’s strided access retrieves unused data (momentum and spin) alongside the desired property (e.g., position), leading to inefficiencies that slow it down. This performance gap becomes pronounced for large size values, where cache effects dominate—AoS suffers from frequent cache thrashing as it exceeds cache capacity, while SoA maintains efficiency through contiguous access. This makes SoA particularly well-suited for quantum simulations focused on per-property operations, as demonstrated by the program’s timing results and total time difference.
+
