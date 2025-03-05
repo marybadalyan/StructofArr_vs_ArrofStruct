@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <random>
 #include <chrono>
-
+#include "kaizen.h"
 int random_num_generator() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
@@ -19,41 +19,39 @@ struct Particle {
     Particle(int pos, int mom, int spn) : position(pos), momentum(mom), spin(spn) {}
 };
 
-const int SIZE = 10000;
-const int ITERATIONS = 1000;
 
 struct ArrayOfParticles { // AoS
     std::vector<Particle> particles;
 
     ArrayOfParticles(int size) {
-        particles.reserve(SIZE);
-        for (int i = 0; i < SIZE; ++i) {
+        particles.reserve(size);
+        for (int i = 0; i < size; ++i) {
             particles.emplace_back(random_num_generator(), random_num_generator(), random_num_generator());
         }
     }
 
-    int average_position() {
+    int average_position(int size) {
         volatile int avg_pos = 0;
         for (const auto& particle : particles) {
             avg_pos += particle.position;
         }
-        return avg_pos / SIZE;
+        return avg_pos / size;
     }
 
-    int average_momentum() {
+    int average_momentum(int size) {
         volatile int avg_mom = 0;
         for (const auto& particle : particles) {
             avg_mom += particle.momentum;
         }
-        return avg_mom / SIZE;
+        return avg_mom / size;
     }
 
-    int average_spin() {
+    int average_spin(int size) {
         volatile int avg_spin = 0;
         for (const auto& particle : particles) {
             avg_spin += particle.spin;
         }
-        return avg_spin / SIZE;
+        return avg_spin / size;
     }
 };
 
@@ -63,76 +61,96 @@ struct ArrayOfProperties { // SoA
     std::vector<int> spin;
 
     ArrayOfProperties(int size) {
-        position.reserve(SIZE);
-        momentum.reserve(SIZE);
-        spin.reserve(SIZE);
-        for (int i = 0; i < SIZE; ++i) {
+        position.reserve(size);
+        momentum.reserve(size);
+        spin.reserve(size);
+        for (int i = 0; i < size; ++i) {
             position.push_back(random_num_generator());
             momentum.push_back(random_num_generator());
             spin.push_back(random_num_generator());
         }
     }
 
-    int average_position() {
+    int average_position(int size) {
         volatile int avg_pos = 0;
         for (int pos : position) {
             avg_pos += pos;
         }
-        return avg_pos / SIZE;
+        return avg_pos / size;
     }
 
-    int average_momentum() {
+    int average_momentum(int size) {
         volatile int avg_mom = 0;
         for (int mom : momentum) {
             avg_mom += mom;
         }
-        return avg_mom / SIZE;
+        return avg_mom / size;
     }
 
-    int average_spin() {
+    int average_spin(int size) {
         volatile int avg_spin = 0;
         for (int spn : spin) {
             avg_spin += spn;
         }
-        return avg_spin / SIZE;
+        return avg_spin / size;
     }
 };
 
-int main() {
-    ArrayOfParticles array_of_structs(SIZE);
-    ArrayOfProperties struct_of_arrays(SIZE);
+std::pair<int,int> process_args(int argc, char* argv[]) {
+    zen::cmd_args args(argv, argc);
+
+    auto size_options = args.get_options("-size");
+    auto iter_options = args.get_options("-iterations");
+
+    if(size_options.empty() || iter_options.empty()) {
+        zen::log("Error: --iterations and --size arguments are absent using default iterations:1000 size:10000!");
+        return {10000, 1000};
+    }
+
+    return {static_cast<int>(std::atoi(size_options[0].c_str())), static_cast<int>(std::atoi(iter_options[0].c_str()))};
+}
+
+
+
+int main(int argc, char* argv[]) {
+
+    auto [size, iterations] = process_args(argc, argv);
+
+    // Create objects
+    ArrayOfParticles array_of_structs(size);
+    ArrayOfProperties struct_of_arrays(size);
 
     // AoS timing per property
     auto start = std::chrono::high_resolution_clock::now();
     int aos_pos = 0;
-    for (size_t i = 0; i < ITERATIONS; ++i) aos_pos = array_of_structs.average_position();
-    auto aos_time_pos = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / ITERATIONS;
+    for (size_t i = 0; i < iterations; ++i) aos_pos = array_of_structs.average_position(size);
+    auto aos_time_pos = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     start = std::chrono::high_resolution_clock::now();
     int aos_mom = 0;
-    for (size_t i = 0; i < ITERATIONS; ++i) aos_mom = array_of_structs.average_momentum();
-    auto aos_time_mom = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / ITERATIONS;
+    for (size_t i = 0; i < iterations; ++i) aos_mom = array_of_structs.average_momentum(size);
+    auto aos_time_mom = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     start = std::chrono::high_resolution_clock::now();
     int aos_spn = 0;
-    for (size_t i = 0; i < ITERATIONS; ++i) aos_spn = array_of_structs.average_spin();
-    auto aos_time_spn = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / ITERATIONS;
+    for (size_t i = 0; i < iterations; ++i) aos_spn = array_of_structs.average_spin(size);
+    auto aos_time_spn = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     // SoA timing per property
     start = std::chrono::high_resolution_clock::now();
     int soa_pos = 0;
-    for (size_t i = 0; i < ITERATIONS; ++i) soa_pos = struct_of_arrays.average_position();
-    auto soa_time_pos = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / ITERATIONS;
+    for (size_t i = 0; i < iterations; ++i) soa_pos = struct_of_arrays.average_position(size);
+    auto soa_time_pos = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     start = std::chrono::high_resolution_clock::now();
     int soa_mom = 0;
-    for (size_t i = 0; i < ITERATIONS; ++i) soa_mom = struct_of_arrays.average_momentum();
-    auto soa_time_mom = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / ITERATIONS;
+    for (size_t i = 0; i < iterations; ++i) soa_mom = struct_of_arrays.average_momentum(size);
+    auto soa_time_mom = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     start = std::chrono::high_resolution_clock::now();
     int soa_spn = 0;
-    for (size_t i = 0; i < ITERATIONS; ++i) soa_spn = struct_of_arrays.average_spin();
-    auto soa_time_spn = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / ITERATIONS;
+    for (size_t i = 0; i < iterations; ++i) soa_spn = struct_of_arrays.average_spin(size);
+    auto soa_time_spn = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count() / iterations;
 
     // Calculate total time difference
     auto avg_time_dif = (aos_time_pos + aos_time_mom + aos_time_spn) - (soa_time_pos + soa_time_mom + soa_time_spn);
