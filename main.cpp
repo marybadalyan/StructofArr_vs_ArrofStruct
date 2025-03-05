@@ -103,7 +103,7 @@ std::pair<int,int> process_args(int argc, char* argv[]) {
     auto iter_options = args.get_options("-iterations");
 
     if(size_options.empty() || iter_options.empty()) {
-        zen::log("Error: --iterations and --size arguments are absent using default iterations:1000 size:10000!");
+        zen::log("Error: --size and --iterations arguments are absent using default iterations:1000 size:10000!");
         return {10000, 1000};
     }
 
