@@ -21,7 +21,7 @@ Uses argument parsing via "kaizen.h" for flexible configuration.
 ### Dependencies
 C++11 or later (for std::chrono, range-based loops, etc.).
 Standard libraries: <iostream>, <vector>, <iomanip>, <random>, <chrono>.
-Custom library: Using ["kaizen.h"](https://github.com/heinsaar/kaizen) 
+Using [kaizen.h](https://github.com/heinsaar/kaizen) for command line argument parsing
 
 ## Build and Run 
 
@@ -73,3 +73,6 @@ Performance: SoA typically outperforms AoS due to contiguous memory access, impr
 Total Time Diff: A positive value (e.g., 1500 ns) means AoS takes longer overall. Here, 1500 ns = (4100 + 4150 + 4120) - (3600 + 3650 + 3620).
 Customization
 Command-Line Args: Use -size and -iterations to adjust the simulation scale.
+
+### Conclusion
+SoA’s sequential access ensures that nearly all fetched data is used, minimizing wasted bandwidth. AoS’s strided access fetches unused data (momentum and spin), slowing it down, especially for large size values where cache effects dominate.
