@@ -31,7 +31,7 @@ struct ArrayOfParticles { // AoS
     }
 
     long long average_position(int size) {
-        volatile long long avg_pos = 0;
+        long long avg_pos = 0;
         for (const auto& particle : particles) {
             avg_pos += particle.position;
         }
@@ -39,7 +39,7 @@ struct ArrayOfParticles { // AoS
     }
 
     long long average_momentum(int size) {
-        volatile long long avg_mom = 0;
+         long long avg_mom = 0;
         for (const auto& particle : particles) {
             avg_mom += particle.momentum;
         }
@@ -47,7 +47,7 @@ struct ArrayOfParticles { // AoS
     }
 
     long long average_spin(int size) {
-        volatile long long  avg_spin = 0;
+         long long  avg_spin = 0;
         for (const auto& particle : particles) {
             avg_spin += particle.spin;
         }
@@ -72,7 +72,7 @@ struct ArrayOfProperties { // SoA
     }
 
     long long average_position(int size) {
-        volatile long long avg_pos = 0;
+         long long avg_pos = 0;
         for (long long pos : position) {
             avg_pos += pos;
         }
@@ -80,7 +80,7 @@ struct ArrayOfProperties { // SoA
     }
 
     long long average_momentum(int size) {
-        volatile long long avg_mom = 0;
+         long long avg_mom = 0;
         for (long long mom : momentum) {
             avg_mom += mom;
         }
@@ -88,7 +88,7 @@ struct ArrayOfProperties { // SoA
     }
 
     long long average_spin(int size) {
-        volatile long long avg_spin = 0;
+         long long avg_spin = 0;
         for (long long spn : spin) {
             avg_spin += spn;
         }
